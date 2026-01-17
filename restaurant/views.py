@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from requests import Response
-from .serializers import BookingSerializer
-from .models import Booking
+from .serializers import BookingSerializer,MenuSerializer
+from .models import Booking,Menu
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
+from rest_framework import viewsets, generics
 
 # Create your views here.
 @api_view(['GET','POST'])
@@ -22,6 +23,10 @@ def BookingView(request):
         if serializer.is_valid():
             serializer.save()
         return HttpResponse(serializer.errors,content_type='application/json')
+
+class MenuItemsView(generics.ListCreateAPIView):
+    queryset = Menu.objects.all()
+    serializer_class = MenuSerializer
     
 @api_view(['GET','POST'])
 def register(request):
