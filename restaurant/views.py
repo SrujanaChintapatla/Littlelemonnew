@@ -3,8 +3,14 @@ from requests import Response
 from .serializers import BookingSerializer
 from .models import Booking
 from django.http import HttpResponse
+from django.contrib.auth.models import User
+from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 
 # Create your views here.
+@api_view(['GET','POST'])
+@permission_classes([IsAuthenticated])
 def BookingView(request):
     if request.method == 'GET':
         bookings = Booking.objects.all()
@@ -16,3 +22,11 @@ def BookingView(request):
         if serializer.is_valid():
             serializer.save()
         return HttpResponse(serializer.errors,content_type='application/json')
+    
+@api_view(['GET','POST'])
+def register(request):
+    User.objects.create_user(
+        username=request.data['username'],
+        password=request.data['password']
+    )
+    return Response({'message': 'User created'})
